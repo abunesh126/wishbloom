@@ -23,7 +23,7 @@ WishBloom is a full-stack starter for creating personalized birthday / friendshi
 1. Create a project at https://supabase.com
 2. Open **SQL Editor** in your Supabase dashboard.
 3. Copy and run all of `supabase/schema.sql`.
-4. In **Project Settings → API**, copy the Project URL and anon/public key.
+4. In **Project Settings → API**, copy the Project URL and publishable key (or legacy anon key).
 
 ## 3. Configure and run locally
 
@@ -37,7 +37,7 @@ Copy `.env.example` to `.env.local`, then fill in:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 ```
 
 Then run:
