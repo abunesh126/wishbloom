@@ -9,7 +9,7 @@ export default async function SharedSurprise({ params }: { params: { slug: strin
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) notFound();
   const db = createClient(url, key);
-  const { data, error } = await db.from("surprises").select("title,recipient_name,sender_name,occasion_date,letter,wishes,theme,published").eq("slug", params.slug).eq("published", true).single();
+  const { data, error } = await db.from("surprises").select("title,recipient_name,sender_name,occasion_date,letter,wishes,theme,experience,published").eq("slug", params.slug).eq("published", true).single();
   if (error || !data) notFound();
   return <SurpriseExperience surprise={data} />;
 }

@@ -1,39 +1,33 @@
-# WishBloom — Surprise Website Builder
+# WishBloom setup
 
-WishBloom is a full-stack starter for creating personalized birthday / friendship surprise pages and publishing them to shareable URLs.
+## Requirements
 
-## Included in this MVP
-
-- Email/password signup and login (Supabase Auth)
-- Surprise editor: recipient, sender, date, title, letter, wishes, theme
-- Save draft and publish
-- User-owned dashboard: edit, delete, copy published link
-- Public `/s/[slug]` surprise page with letter reveal and wishes
-- Responsive layout for desktop and mobile
-- Row-level security policies in `supabase/schema.sql`
-
-## 1. Requirements
-
-- Node.js 20 LTS (or a current supported Node release)
+- Node.js 20 LTS (or a current supported Node.js release)
 - npm
-- A free Supabase project
+- A Supabase project
 
-## 2. Create the database
+## Supabase database and storage
 
-1. Create a project at https://supabase.com
-2. Open **SQL Editor** in your Supabase dashboard.
-3. Copy and run all of `supabase/schema.sql`.
-4. In **Project Settings → API**, copy the Project URL and publishable key (or legacy anon key).
+1. In Supabase **SQL Editor**, run the complete `supabase/schema.sql` file.
+2. Then run `supabase/migrations/20261125230000_birthday_experience.sql`.
+   This additive migration adds `surprises.experience`, creates the private
+   `surprise-assets` bucket, and adds owner/published-surprise storage policies.
+   Existing surprise rows and their text remain intact.
+3. The bucket accepts MP3, M4A, WAV, OGG, and WebM audio (up to 12 MB), and
+   JPG, PNG, and WebP images (up to 8 MB each). The app enforces an eight-photo
+   limit. Published recipient pages receive short-lived signed URLs; the bucket
+   itself remains private.
+4. No service-role key is needed. Never put one in a `NEXT_PUBLIC_*` variable.
 
-## 3. Configure and run locally
+The storage policies allow an authenticated owner to manage files only beneath
+their own surprise. Anonymous recipient reads are allowed only for a published
+surprise and an asset path currently referenced by an enabled song or memory
+page. Review the policies in the migration before applying them to a production
+project.
 
-In the project folder:
+## Environment and local run
 
-```bash
-npm install
-```
-
-Copy `.env.example` to `.env.local`, then fill in:
+Copy `.env.example` to `.env.local` and set:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
@@ -43,36 +37,26 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 Then run:
 
 ```bash
+npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+Open http://localhost:3000, create an account, and configure a birthday surprise.
+Save a draft before uploading media if you are creating a new surprise; the
+editor creates its database row before uploading associated assets.
 
-## 4. Test the user flow
+## Publishing and checking
 
-1. Sign up with an email and password.
-2. If email confirmation is enabled, confirm the email.
-3. Log in.
-4. Create a surprise, fill in the recipient and letter, and add wishes.
-5. Click **Publish surprise**.
-6. Copy/open the generated `/s/your-slug` link in a private/incognito window.
-7. Confirm the published surprise loads without logging in.
-8. Log in again to edit or delete your surprise.
+Publish a surprise and open its `/s/<slug>` URL in a private browser window.
+The recipient journey hides optional pages that are disabled or do not have
+their required content. Song playback requires a user gesture. Candle sound
+detection runs locally in the browser and does not record or upload microphone
+audio; the press-and-hold interaction remains available if microphone permission
+is denied.
 
-## 5. Deploy publicly
+For Vercel, configure the same two public environment variables. Set the
+production Site URL and appropriate redirect URLs under Supabase Auth URL
+Configuration.
 
-1. Push the project to a private or public GitHub repository.
-2. Import the repository into https://vercel.com.
-3. Add the two environment variables from `.env.local` in Vercel Project Settings → Environment Variables.
-4. Deploy.
-5. In Supabase Auth → URL Configuration, set the production Site URL to your Vercel domain and add any local/production redirect URLs needed for email confirmation.
-
-After deployment, published links will look like:
-
-`https://your-domain.vercel.app/s/recipient-surprise-a1b2c3d4`
-
-## Notes / next improvements
-
-This is a functional MVP, not a finished commercial service. Current editor stores text and wishes; photo and audio upload, richer templates, password-protected pages, payment, custom domains, rate limiting, content moderation, and an admin dashboard are not included yet.
-
-The app uses the Supabase anon key in the browser. That is expected; never put a Supabase service-role key in frontend code. Row-level security is required and is included in the SQL setup.
+The page sequence, media limits, bucket, migration, and required environment
+variables are also summarized in `setup.yaml`.

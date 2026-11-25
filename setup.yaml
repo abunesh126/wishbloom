@@ -1,0 +1,80 @@
+version: 1
+project: WishBloom
+experience:
+  page_order:
+    default:
+      - welcome
+      - song
+      - wishes
+      - candles
+      - memory
+      - final
+    creator_configurable: true
+    fixed_endpoints: [welcome, final]
+  pages:
+    welcome:
+      enabled: true
+      required: true
+      data: [recipient_name, occasion_date, title]
+      includes: [birthday_countdown, celebration_state, cake_art, open_gift_action]
+    song:
+      enabled_by_default: false
+      optional: true
+      data: [song_title, song_dedication, audio_path]
+      accepted_audio: [mp3, m4a, wav, ogg, webm]
+      max_file_size_mb: 12
+    wishes:
+      enabled_by_default: true
+      optional: true
+      data: [wishes]
+    candles:
+      enabled_by_default: true
+      optional: true
+      data: []
+      interactions: [local_microphone_detection, press_and_hold, spacebar]
+    memory:
+      enabled_by_default: false
+      optional: true
+      data: [memory_title, memory_photos]
+      accepted_images: [jpg, jpeg, png, webp]
+      max_file_size_mb: 8
+      max_photos: 8
+    final:
+      enabled: true
+      required: true
+      data: [recipient_name, sender_name, letter]
+      includes: [watch_again, back_to_home]
+assets:
+  storage_provider: supabase_storage
+  bucket: surprise-assets
+  public_bucket: false
+  size_limit_bytes: 12582912
+  allowed_mime_types:
+    - audio/mpeg
+    - audio/mp4
+    - audio/wav
+    - audio/x-wav
+    - audio/ogg
+    - audio/webm
+    - image/jpeg
+    - image/png
+    - image/webp
+  published_asset_access: signed_url_if_referenced_by_enabled_page
+  signed_url_ttl_seconds: 3600
+  owner_path: "{owner_id}/{surprise_id}/{kind}/{uuid}.{extension}"
+  policies:
+    - authenticated_owners_manage_assets_only_for_their_surprises
+    - anonymous_or_authenticated_read_requires_published_surprise_and_enabled_asset_reference
+database:
+  base_schema: supabase/schema.sql
+  required_migration: supabase/migrations/20261125230000_birthday_experience.sql
+  adds:
+    - surprises.experience_jsonb
+    - private_surprise_assets_bucket
+    - storage_object_access_policies
+environment:
+  required:
+    - NEXT_PUBLIC_SUPABASE_URL
+    - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  forbidden:
+    - SUPABASE_SERVICE_ROLE_KEY_in_browser

@@ -1,4 +1,6 @@
 -- Run this entire file in Supabase Dashboard > SQL Editor.
+-- For birthday journey configuration and private media storage, also apply
+-- migrations/20261125230000_birthday_experience.sql after this schema.
 create extension if not exists pgcrypto;
 
 create table if not exists public.surprises (
