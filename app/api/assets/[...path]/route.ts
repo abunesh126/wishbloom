@@ -28,7 +28,7 @@ export async function GET(
   const supabase = createClient(url, key);
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrl(path.join("/"), 60 * 60);
+.createSignedUrl(path.join("/"), 60 * 60 * 24);
 
   if (error || !data) {
     return NextResponse.json({ error: "Asset is unavailable." }, { status: 404 });
