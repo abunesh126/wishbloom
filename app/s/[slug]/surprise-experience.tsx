@@ -31,7 +31,7 @@ const pageNames: Record<PageKey, string> = {
 
 async function getAssetUrl(path: string) {
   const encodedPath = path.split("/").map(encodeURIComponent).join("/");
-  const response = await fetch(`/api/assets/${encodedPath}`);
+  const response = await fetch(`/api/assets/${encodedPath}`, { cache: "no-store" });
   const data = await response.json() as { url?: string; error?: string };
   if (!response.ok || !data.url) throw new Error(data.error || "This surprise asset could not be loaded.");
   return data.url;
