@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 
 const bucket = "surprise-assets";
 
+// Ensure signed asset URLs are generated from the latest stored path.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   _request: Request,
   { params }: { params: { path: string[] } },
@@ -36,6 +40,6 @@ export async function GET(
 
   return NextResponse.json(
     { url: data.signedUrl },
-    { headers: { "Cache-Control": "private, max-age=300" } },
+    { headers: { "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate", "Pragma": "no-cache", "Expires": "0" } },
   );
 }
